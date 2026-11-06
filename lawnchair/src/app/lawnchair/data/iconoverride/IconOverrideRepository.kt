@@ -93,7 +93,9 @@ class IconOverrideRepository @Inject constructor(
             }
             .sortedBy { it.key.componentName.className }
             .joinToString(";") { (key, item) ->
-                "${key.componentName.className}:${item.packPackageName}/${item.drawableName}/${item.type}"
+                // The rendering mode must invalidate icons cached with an adaptive background.
+                val type = if (item.type == IconType.Image) "Image/unwrapped" else item.type.name
+                "${key.componentName.className}:${item.packPackageName}/${item.drawableName}/$type"
             }
     }
 

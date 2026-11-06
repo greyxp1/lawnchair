@@ -10,7 +10,6 @@ import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.LruCache
-import androidx.core.graphics.drawable.toDrawable
 import androidx.exifinterface.media.ExifInterface
 import app.lawnchair.data.AppDatabase
 import app.lawnchair.data.iconoverride.IconImage
@@ -89,7 +88,7 @@ object ImportedIcon {
                 BitmapFactory.decodeByteArray(it, 0, it.size)
             }
         }?.also { cache.put(id, it) } ?: return null
-        return bitmap.toDrawable(context.resources)
+        return ExtendedBitmapDrawable(context.resources, bitmap, true)
     }
 
     private fun fit(width: Float, height: Float): RectF {
