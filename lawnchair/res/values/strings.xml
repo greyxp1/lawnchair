@@ -307,6 +307,11 @@
     <string name="set_default_launcher_tip">To access shortcuts and additional features, set Lawnchair as your default launcher</string>
 
     <string name="notification_dots">Notification dots</string>
+    <string name="toggle_notifications_action">Toggle notifications</string>
+    <string name="app_notifications_enabled">Notifications turned on</string>
+    <string name="app_notifications_disabled">Notifications turned off</string>
+    <string name="app_notifications_root_required">Root access is required to change app notifications</string>
+    <string name="app_notifications_failed">Could not change app notifications</string>
     <string name="show_notification_count">Show notification counter</string>
     <string name="notification_dots_color">Notification dot color</string>
     <string name="notification_dots_text_color">Notification counter color</string>

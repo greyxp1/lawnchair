@@ -48,6 +48,7 @@ import app.lawnchair.root.RootNotAvailableException
 import app.lawnchair.theme.ThemeProvider
 import app.lawnchair.ui.popup.LauncherOptionsPopup
 import app.lawnchair.ui.popup.LawnchairShortcut
+import app.lawnchair.ui.popup.NotificationShortcut
 import app.lawnchair.util.getThemedIconPacksInstalled
 import app.lawnchair.util.unsafeLazy
 import app.lawnchair.views.LawnchairFloatingSurfaceView
@@ -283,7 +284,7 @@ class LawnchairLauncher : QuickstepLauncher() {
         super.getSupportedShortcuts(container),
         Stream.concat(
             Stream.of(LawnchairShortcut.UNINSTALL, LawnchairShortcut.CUSTOMIZE, LawnchairShortcut.OPEN_IN_STORE),
-            Stream.of(LawnchairShortcut.PAUSE_APPS),
+            Stream.of(LawnchairShortcut.PAUSE_APPS, NotificationShortcut.FACTORY),
         ),
     )
 
