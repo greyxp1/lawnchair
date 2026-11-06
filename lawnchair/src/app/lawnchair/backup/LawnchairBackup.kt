@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.graphics.drawable.toBitmap
 import app.lawnchair.LawnchairProto.BackupInfo
+import app.lawnchair.data.AppDatabase
 import app.lawnchair.util.hasFlag
 import app.lawnchair.util.scaleDownTo
 import app.lawnchair.util.scaleDownToDisplaySize
@@ -180,6 +181,7 @@ class LawnchairBackup(
                             screenshotBitmap.compress(Bitmap.CompressFormat.PNG, 85, out)
                         }
 
+                        AppDatabase.INSTANCE.get(context).checkpoint()
                         getFiles(context, forRestore = false).entries.forEach {
                             if (!it.value.exists()) return@forEach
                             out.putNextEntry(ZipEntry(it.key))

@@ -2,8 +2,10 @@ package app.lawnchair.data.iconoverride
 
 import android.content.Context
 import android.os.UserHandle
+import androidx.room.withTransaction
 import app.lawnchair.data.AppDatabase
 import app.lawnchair.icons.picker.IconPickerItem
+import app.lawnchair.icons.picker.IconType
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.dagger.ApplicationContext
 import com.android.launcher3.dagger.LauncherAppComponent
@@ -26,7 +28,8 @@ class IconOverrideRepository @Inject constructor(
 ) : SafeCloseable {
 
     private val scope = MainScope() + CoroutineName("IconOverrideRepository")
-    private val dao = AppDatabase.INSTANCE.get(context).iconOverrideDao()
+    private val database = AppDatabase.INSTANCE.get(context)
+    private val dao = database.iconOverrideDao()
 
     @Volatile
     private var _overridesMap = mapOf<ComponentKey, IconPickerItem>()
@@ -51,8 +54,15 @@ class IconOverrideRepository @Inject constructor(
         }
     }
 
-    suspend fun setOverride(target: ComponentKey, item: IconPickerItem) {
-        dao.insert(IconOverride(target, item))
+    suspend fun setOverride(target: ComponentKey, item: IconPickerItem, image: IconImage? = null) {
+        database.withTransaction {
+            if (image != null) {
+                require(item.type == IconType.Image && item.drawableName == image.id)
+                dao.insertImage(image)
+            }
+            dao.insert(IconOverride(target, item))
+            dao.deleteUnusedImages()
+        }
         // Keep the in-memory map in sync before any icon reload. The Room Flow update is
         // async and can race with onAppIconChanged / forceReload, leaving stale icons cached.
         _overridesMap = _overridesMap + (target to item)
@@ -60,7 +70,10 @@ class IconOverrideRepository @Inject constructor(
     }
 
     suspend fun deleteOverride(target: ComponentKey) {
-        dao.delete(target)
+        database.withTransaction {
+            dao.delete(target)
+            dao.deleteUnusedImages()
+        }
         _overridesMap = _overridesMap - target
         updatePackageQueue.offer(target)
     }
@@ -85,7 +98,10 @@ class IconOverrideRepository @Inject constructor(
     }
 
     suspend fun deleteAll() {
-        dao.deleteAll()
+        database.withTransaction {
+            dao.deleteAll()
+            dao.deleteUnusedImages()
+        }
         _overridesMap = emptyMap()
         LauncherAppState.getInstance(context).model.reloadIfActive()
     }

@@ -10,6 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import app.lawnchair.data.folder.FolderInfoEntity
 import app.lawnchair.data.folder.FolderItemEntity
 import app.lawnchair.data.folder.service.FolderDao
+import app.lawnchair.data.iconoverride.IconImage
 import app.lawnchair.data.iconoverride.IconOverride
 import app.lawnchair.data.iconoverride.IconOverrideDao
 import app.lawnchair.data.wallpaper.Wallpaper
@@ -17,7 +18,7 @@ import app.lawnchair.data.wallpaper.service.WallpaperDao
 import app.lawnchair.util.MainThreadInitializedObject
 import kotlinx.coroutines.runBlocking
 
-@Database(entities = [IconOverride::class, Wallpaper::class, FolderInfoEntity::class, FolderItemEntity::class], version = 3)
+@Database(entities = [IconOverride::class, IconImage::class, Wallpaper::class, FolderInfoEntity::class, FolderItemEntity::class], version = 4)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -38,6 +39,12 @@ abstract class AppDatabase : RoomDatabase() {
     }
 
     companion object {
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `IconImage` (`id` TEXT NOT NULL, `png` BLOB NOT NULL, PRIMARY KEY(`id`))")
+            }
+        }
+
         val MIGRATION_1_3 = object : Migration(1, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
@@ -94,7 +101,7 @@ abstract class AppDatabase : RoomDatabase() {
                 context,
                 AppDatabase::class.java,
                 "preferences",
-            ).addMigrations(MIGRATION_1_3).addMigrations(MIGRATION_2_3).build()
+            ).addMigrations(MIGRATION_1_3, MIGRATION_2_3, MIGRATION_3_4).build()
         }
     }
 }

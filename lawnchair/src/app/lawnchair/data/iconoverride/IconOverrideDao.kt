@@ -12,6 +12,15 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface IconOverrideDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertImage(image: IconImage)
+
+    @Query("SELECT png FROM IconImage WHERE id = :id")
+    suspend fun getImage(id: String): ByteArray?
+
+    @Query("DELETE FROM IconImage WHERE id NOT IN (SELECT drawableName FROM IconOverride WHERE type = 'Image')")
+    suspend fun deleteUnusedImages()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: IconOverride)
 
     @Query("DELETE FROM iconoverride WHERE target = :target")

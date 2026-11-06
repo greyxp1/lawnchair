@@ -161,7 +161,7 @@ class LawnchairIconProvider @Inject constructor(
         val iconPackIcon = iconPackEntry?.let { iconPackProvider.getDrawable(it, iconDpi, user) }
         val baseIcon = iconPackIcon ?: super.getIcon(info, appInfo, iconDpi)
 
-        if (!themedIconsEnabled || iconEntry == null) {
+        if (!themedIconsEnabled || iconEntry == null || iconEntry.type == IconType.Image) {
             return baseIcon
         }
 

@@ -346,6 +346,9 @@
     <string name="icon_picker_reset_to_default">Reset to default</string>
     <string name="icon_pack_external_picker">Open external picker</string>
     <string name="pick_icon_from_label">Pick icon from</string>
+    <string name="icon_import_photos">Photos</string>
+    <string name="icon_import_files">Files</string>
+    <string name="icon_import_failed">Could not import this image</string>
     <string name="icon_picker_load_failed">Couldn\'t load more icons</string>
 
     <!-- Icon shapes  -->

@@ -38,6 +38,7 @@ rikka-refine = { id = "dev.rikka.tools.refine", version.ref = "refine" }
 diffplug-spotless = "com.diffplug.spotless:8.11.0"
 
 [libraries]
+androidsvg = "com.caverock:androidsvg-aar:1.4"
 # AndroidX
 androidx-activity-compose = "androidx.activity:activity-compose:1.13.0"
 androidx-benchmark-macro-junit4 = "androidx.benchmark:benchmark-macro-junit4:1.5.0"

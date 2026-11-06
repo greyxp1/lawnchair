@@ -8,7 +8,9 @@ import android.os.Process
 import android.os.UserHandle
 import app.lawnchair.icons.ClockMetadata
 import app.lawnchair.icons.CustomAdaptiveIconDrawable
+import app.lawnchair.icons.ImportedIcon
 import app.lawnchair.icons.picker.IconEntry
+import app.lawnchair.icons.picker.IconType
 import app.lawnchair.icons.shouldTransparentBGIcons
 import com.android.launcher3.dagger.ApplicationContext
 import com.android.launcher3.dagger.LauncherAppComponent
@@ -44,11 +46,13 @@ class IconPackProvider @Inject constructor(
     }
 
     fun getClockMetadata(iconEntry: IconEntry): ClockMetadata? {
+        if (iconEntry.type == IconType.Image) return null
         val iconPack = getIconPackOrSystem(iconEntry.packPackageName) ?: return null
         return iconPack.getClock(iconEntry)
     }
 
     fun getDrawable(iconEntry: IconEntry, iconDpi: Int, user: UserHandle): Drawable? {
+        if (iconEntry.type == IconType.Image) return ImportedIcon.getDrawable(context, iconEntry.name)
         val iconPack = getIconPackOrSystem(iconEntry.packPackageName) ?: return null
         iconPack.loadBlocking()
         val drawable = iconPack.getIcon(iconEntry, iconDpi) ?: return null
