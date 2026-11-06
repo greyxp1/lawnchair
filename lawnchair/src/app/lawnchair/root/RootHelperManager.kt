@@ -22,20 +22,22 @@ import kotlinx.coroutines.withContext
 class RootHelperManager(private val context: Context) {
     private val scope = MainScope() + CoroutineName("RootHelperManager")
     private val prefs = PreferenceManager.getInstance(context)
-    private val isAvailableDeferred by lazy {
-        scope.async(Dispatchers.IO) {
-            Shell.rootAccess()
-        }
-    }
     private var rootHelperDeferred: Deferred<IRootHelper>? = null
 
-    suspend fun isAvailable() = isAvailableDeferred.await()
+    suspend fun isAvailable() = withContext(Dispatchers.IO) {
+        val shell = Shell.getShell()
+        val available = shell.isRoot
+        // Discard a denied shell so a later grant can be retried without restarting.
+        if (!available) shell.close()
+        available
+    }
 
     @Throws(RootNotAvailableException::class)
     suspend fun getService(): IRootHelper {
-        prefs.autoLaunchRoot.set(isAvailable())
+        val available = isAvailable()
+        prefs.autoLaunchRoot.set(available)
 
-        if (!isAvailable()) throw RootNotAvailableException()
+        if (!available) throw RootNotAvailableException()
 
         if (rootHelperDeferred == null) {
             rootHelperDeferred = scope.async {
@@ -46,7 +48,7 @@ class RootHelperManager(private val context: Context) {
     }
 
     private suspend fun bindImpl(onDisconnected: () -> Unit): IRootHelper {
-        return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.Main.immediate) {
             val intent = Intent(context, RootHelper::class.java)
             suspendCoroutine {
                 val connection = object : ServiceConnection {
